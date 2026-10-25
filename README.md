@@ -14,6 +14,37 @@ https://github.com/Lewandowski-commits/trekHAOS.git
 
 After adding it, install **TrekHAOS** from the app store. See the app's [documentation](./apps/trek-haos/DOCS.md) for setup, access, and data storage details.
 
+## Remote access with a custom domain
+
+If you want to reach the app from outside your local network without relying on Home Assistant Cloud, use a reverse proxy or tunnel in front of Home Assistant or the app itself.
+
+A common pattern is Cloudflare Tunnel:
+
+- Route `https://trek.example.com` to the app container on port `3000`.
+- Route `https://homeassistant.example.com` to Home Assistant itself.
+- Keep the app behind HTTPS and enable TREK's authentication.
+
+Example Cloudflare tunnel ingress (generic):
+
+```yaml
+ingress:
+  - hostname: homeassistant.example.com
+    service: http://homeassistant:8123
+  - hostname: trek.example.com
+    service: http://trek:3000
+  - service: http_status:404
+```
+
+When using a custom domain, set the app's public URL and origin policy to match the hostname you expose. For example in TREK:
+
+```env
+APP_URL=https://trek.example.com
+ALLOWED_ORIGINS=https://trek.example.com
+COOKIE_SECURE=true
+```
+
+If Home Assistant is behind the tunnel, make sure the HA `http:` config trusts the proxy that is forwarding requests. You can then keep the app accessible via a custom hostname while avoiding the Home Assistant Cloud ingress limitation.
+
 ## App image
 
 The app uses the official multi-architecture `mauriceboe/trek` image. Its version pins the upstream image tag in [`apps/trek-haos/config.yaml`](./apps/trek-haos/config.yaml).

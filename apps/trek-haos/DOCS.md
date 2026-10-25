@@ -28,6 +28,27 @@ The app exposes container port `3000` on host port `3000` by default. Use the **
 
 If port 3000 is already in use, change the host port in the app's Network settings. TREK has its own user authentication; use that authentication if you expose the service beyond your trusted local network.
 
+For remote access beyond your local network, use a trusted reverse proxy or tunnel in front of Home Assistant or the app itself. A common setup is Cloudflare Tunnel with separate hostnames for Home Assistant and the TREK app:
+
+```yaml
+ingress:
+  - hostname: homeassistant.example.com
+    service: http://homeassistant:8123
+  - hostname: trek.example.com
+    service: http://trek:3000
+  - service: http_status:404
+```
+
+When exposing TREK publicly, keep HTTPS enabled and set the app URL to the public hostname. Example:
+
+```env
+APP_URL=https://trek.example.com
+ALLOWED_ORIGINS=https://trek.example.com
+COOKIE_SECURE=true
+```
+
+If Home Assistant itself is behind the tunnel, configure `http:` to trust the proxy that forwards traffic to Home Assistant. This is different from the app-level config above, and it is required to avoid 400 responses from Home Assistant when the domain is served through the tunnel.
+
 Nabu Casa remote access is not currently supported by this app. The Web UI button connects directly to port 3000, which works on the local network but is not proxied by the Home Assistant Cloud URL. Making it available there requires Home Assistant ingress, but TREK's current web client assumes it is served from the root URL and does not support ingress's changing subpath. Enabling ingress without upstream base-path support would break page assets, API requests, and navigation.
 
 ## Persistent data
