@@ -41,4 +41,4 @@ The app maps TREK's `/app/data` and `/app/uploads` directories to Home Assistant
 
 ## Updating the app version
 
-The `version` in `config.yaml` selects the tag pulled from `mauriceboe/trek`. When updating TREK, change this value to an existing upstream release tag.
+The `version` in `config.yaml` selects the tag pulled from `mauriceboe/trek`. A scheduled GitHub Actions workflow checks weekly for a newer stable image tag available for both supported architectures and opens a pull request when one is found. Review and merge the pull request to update the app. If pull request creation is blocked, allow GitHub Actions to create pull requests under **Settings > Actions > General**.

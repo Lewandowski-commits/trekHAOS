@@ -1,0 +1,39 @@
+name: Update TREK image
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Update TREK image version
+        id: update
+        run: python .github/scripts/update-trek-image.py
+
+      - name: Create pull request
+        if: steps.update.outputs.update_available == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/update-trek-image
+          delete-branch: true
+          commit-message: "chore: update TREK image to ${{ steps.update.outputs.new_version }}"
+          title: "chore: update TREK image to ${{ steps.update.outputs.new_version }}"
+          body: |
+            Updates the TREK app image to `${{ steps.update.outputs.new_version }}`.
+
+            This version is published for the app's supported amd64 and arm64 architectures.
