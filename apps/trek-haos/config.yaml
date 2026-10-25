@@ -1,5 +1,5 @@
 name: "TrekHAOS"
-version: "4.3.4"
+version: "5.0.0"
 slug: "trek_haos"
 description: "Self-hosted TREK trip planner"
 url: "https://github.com/liketrek/TREK"
