@@ -8,7 +8,10 @@ arch:
   - amd64
 init: false
 legacy: true
-image: "mauriceboe/trek"
+ingress: true
+ingress_port: 3000
+panel_icon: "mdi:airplane"
+panel_title: "TREK"
 environment:
   PORT: "3000"
   NODE_USE_ENV_PROXY: "1"
@@ -21,6 +24,9 @@ map:
     path: /app/data
   - type: data
     path: /app/uploads
+  - type: config
+    path: /config
+    read_only: true
 options:
   COOKIE_SECURE: "false"
 schema:
