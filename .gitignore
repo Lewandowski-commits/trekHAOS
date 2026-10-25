@@ -20,3 +20,8 @@ node_modules/
 
 # Environment variables
 .env
+
+# Python
+__pycache__
+custom_components/trek/__pycache__
+*.pyc
