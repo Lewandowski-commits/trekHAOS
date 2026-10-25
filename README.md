@@ -2,7 +2,7 @@
 
 This repository provides a Home Assistant app for [TREK](https://github.com/liketrek/TREK), a self-hosted trip planner.
 
-## Install
+## 1. Install the Add-on (Supervisor)
 
 Add this repository from **Settings > Apps > Install app > ⋮ > Repositories**, then paste:
 
@@ -13,6 +13,17 @@ https://github.com/Lewandowski-commits/trekHAOS.git
 [![Add the TrekHAOS app repository to Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FLewandowski-commits%2FtrekHAOS.git)
 
 After adding it, install **TrekHAOS** from the app store. See the app's [documentation](./apps/trek-haos/DOCS.md) for setup, access, and data storage details.
+
+## 2. Install the Integration (HACS)
+
+This repository also contains a Custom Integration for TREK. It provides **Calendar** events for your trips and **Sensors** for upcoming trip countdowns.
+
+1. Go to **HACS > Integrations** in your Home Assistant.
+2. Click the three dots (⋮) in the top right corner and select **Custom repositories**.
+3. Add `https://github.com/Lewandowski-commits/trekHAOS.git` with the category **Integration**.
+4. Click **Download** on the newly discovered TREK integration.
+5. Restart Home Assistant.
+6. Go to **Settings > Devices & Services > Add Integration**, search for **TREK**, and log in with your credentials!
 
 ## Remote access with a custom domain
 
