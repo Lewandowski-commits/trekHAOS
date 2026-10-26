@@ -28,7 +28,7 @@ class TrekApi:
         }
             
         try:
-            async with self._session.get(f"{self._url}/api/trips", headers=headers) as response:
+            async with self._session.get(f"{self._url}/api/v1/trips", headers=headers) as response:
                 if response.status in (401, 403):
                     raise TrekApiAuthError("Not authenticated or invalid API key")
                 response.raise_for_status()
