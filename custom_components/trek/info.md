@@ -14,6 +14,6 @@ After installing this integration via HACS, you must configure it:
 2. Go to **Settings > Devices & Services > Add Integration**.
 3. Search for **TREK**.
 4. Enter your TREK URL (e.g., `http://localhost:3000` if using the local Add-on, or your external TREK domain).
-5. Provide your TREK Email and Password.
+5. Provide your TREK API Key (you can generate it in your TREK instance's settings).
 
 Your sensors and calendar will automatically populate!

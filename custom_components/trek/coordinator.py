@@ -9,7 +9,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import TrekApi, TrekApiClientError, TrekApiAuthError
-from .const import CONF_EMAIL, CONF_PASSWORD, CONF_URL, DOMAIN
+from .const import CONF_API_KEY, CONF_URL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,8 +22,7 @@ class TrekDataUpdateCoordinator(DataUpdateCoordinator[List[Dict[str, Any]]]):
         """Initialize."""
         self.api = TrekApi(
             url=entry.data[CONF_URL],
-            email=entry.data[CONF_EMAIL],
-            password=entry.data[CONF_PASSWORD],
+            api_key=entry.data[CONF_API_KEY],
             session=async_get_clientsession(hass),
         )
         self.entry = entry

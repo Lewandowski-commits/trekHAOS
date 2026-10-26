@@ -3,7 +3,6 @@
 DOMAIN = "trek"
 
 CONF_URL = "url"
-CONF_EMAIL = "email"
-CONF_PASSWORD = "password"
+CONF_API_KEY = "api_key"
 
 DEFAULT_URL = "http://localhost:3000"

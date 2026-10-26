@@ -6,14 +6,13 @@
         "description": "Enter your TREK connection details.",
         "data": {
           "url": "TREK URL",
-          "email": "Email",
-          "password": "Password"
+          "api_key": "API Key"
         }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect",
-      "invalid_auth": "Invalid authentication",
+      "invalid_auth": "Invalid API key",
       "unknown": "Unexpected error"
     },
     "abort": {
