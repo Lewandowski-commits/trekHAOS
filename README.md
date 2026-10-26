@@ -18,7 +18,7 @@ After adding it, install **TrekHAOS** from the app store. See the app's [documen
 
 ## 2. Install the Integration (HACS)
 
-This repository also contains a Custom Integration for TREK. It provides **Calendar** events for your trips and **Sensors** for upcoming trip countdowns.
+This repository also contains a Custom Integration for TREK. It provides **Calendar** events for your trips and **Sensors** for upcoming trip countdowns, statistics, and bucket list items.
 
 1. Go to **HACS > Integrations** in your Home Assistant.
 2. Click the three dots (⋮) in the top right corner and select **Custom repositories**.
