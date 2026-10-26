@@ -27,6 +27,34 @@ This repository also contains a Custom Integration for TREK. It provides **Calen
 5. Restart Home Assistant.
 6. Go to **Settings > Devices & Services > Add Integration**, search for **TREK**, and log in with your credentials!
 
+## Sensors Provided
+
+- Active Trips
+- Next Trip (with start date, end date, days until, destination attributes)
+- Total Trips
+- Total Countries
+- Total Cities
+- Total Places
+- Total Days Travelled
+- Total Distance Flown (in km)
+- Days Until Next Trip
+- Last Trip (with details in attributes)
+- Bucket List (count, with item names in attributes)
+
+## Sensors Provided
+
+- Active Trips
+- Next Trip (with start date, end date, days until, destination attributes)
+- Total Trips
+- Total Countries
+- Total Cities
+- Total Places
+- Total Days Travelled
+- Total Distance Flown (in km)
+- Days Until Next Trip
+- Last Trip (with details in attributes)
+- Bucket List (count, with item names in attributes)
+
 ## Remote access with a custom domain
 
 If you want to reach the app from outside your local network without relying on Home Assistant Cloud, use a reverse proxy or tunnel in front of Home Assistant or the app itself.
