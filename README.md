@@ -2,6 +2,8 @@
 
 This repository provides a Home Assistant app for [TREK](https://github.com/liketrek/TREK), a self-hosted trip planner.
 
+**Credits**: The original TREK app was created by [mauriceboe](https://github.com/mauriceboe). This Home Assistant integration was created by [Lewandowski-commits](https://github.com/Lewandowski-commits).
+
 ## 1. Install the Add-on (Supervisor)
 
 Add this repository from **Settings > Apps > Install app > ⋮ > Repositories**, then paste:

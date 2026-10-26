@@ -2,6 +2,8 @@
 
 This custom integration connects Home Assistant to your TREK trip planner instance. 
 
+**Credits**: The original TREK app was created by [mauriceboe](https://github.com/mauriceboe). This Home Assistant integration was created by [Lewandowski-commits](https://github.com/Lewandowski-commits).
+
 ## Features
 - **Calendar Integration**: See your trips directly in your Home Assistant Calendar.
 - **Sensors**: 
