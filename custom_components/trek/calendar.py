@@ -39,13 +39,13 @@ class TrekCalendar(CoordinatorEntity[TrekDataUpdateCoordinator], CalendarEntity)
     @property
     def event(self) -> CalendarEvent | None:
         """Return the next upcoming calendar event."""
-        if not self.coordinator.data:
+        if not self.coordinator.data or not self.coordinator.data.get("trips"):
             return None
 
         today = datetime.now().date()
         upcoming_events = []
 
-        for trip in self.coordinator.data:
+        for trip in self.coordinator.data.get("trips", []):
             if trip.get("is_archived"):
                 continue
                 
@@ -90,13 +90,13 @@ class TrekCalendar(CoordinatorEntity[TrekDataUpdateCoordinator], CalendarEntity)
         """Return calendar events within a datetime range."""
         events = []
         
-        if not self.coordinator.data:
+        if not self.coordinator.data or not self.coordinator.data.get("trips"):
             return events
 
         start_date_d = start_date.date()
         end_date_d = end_date.date()
 
-        for trip in self.coordinator.data:
+        for trip in self.coordinator.data.get("trips", []):
             if trip.get("is_archived"):
                 continue
 

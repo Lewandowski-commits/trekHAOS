@@ -27,31 +27,51 @@ async def async_setup_entry(
     sensors = [
         TrekActiveTripsSensor(coordinator, entry),
         TrekNextTripSensor(coordinator, entry),
+        TrekTotalTripsSensor(coordinator, entry),
+        TrekTotalCountriesSensor(coordinator, entry),
+        TrekTotalCitiesSensor(coordinator, entry),
+        TrekTotalPlacesSensor(coordinator, entry),
+        TrekTotalDaysSensor(coordinator, entry),
+        TrekTotalDistanceSensor(coordinator, entry),
+        TrekDaysUntilNextTripSensor(coordinator, entry),
+        TrekLastTripSensor(coordinator, entry),
+        TrekBucketListSensor(coordinator, entry),
     ]
 
     async_add_entities(sensors)
 
 
-class TrekActiveTripsSensor(CoordinatorEntity[TrekDataUpdateCoordinator], SensorEntity):
-    """Sensor showing the number of active/upcoming trips."""
-
-    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+class TrekBaseSensor(CoordinatorEntity[TrekDataUpdateCoordinator], SensorEntity):
+    """Base class for TREK sensors."""
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry, key: str, name: str, icon: str) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
-        self._attr_unique_id = f"{entry.entry_id}_active_trips"
-        self._attr_name = "TREK Active Trips"
-        self._attr_icon = "mdi:airplane-takeoff"
+        self._attr_unique_id = f"{entry.entry_id}_{key}"
+        self._attr_name = f"TREK {name}"
+        self._attr_icon = icon
+
+    @property
+    def stats(self) -> Dict[str, Any]:
+        """Return stats dictionary from coordinator."""
+        if not self.coordinator.data:
+            return {}
+        return self.coordinator.data.get("stats", {})
+
+
+class TrekActiveTripsSensor(TrekBaseSensor):
+    """Sensor showing the number of active/upcoming trips."""
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "active_trips", "Active Trips", "mdi:airplane-takeoff")
 
     @property
     def native_value(self) -> int:
-        """Return the state of the sensor."""
         if not self.coordinator.data:
             return 0
             
         count = 0
         today = datetime.now().date()
         
-        for trip in self.coordinator.data:
+        for trip in self.coordinator.data.get("trips", []):
             end_date_str = trip.get("end_date")
             if end_date_str:
                 try:
@@ -61,77 +81,148 @@ class TrekActiveTripsSensor(CoordinatorEntity[TrekDataUpdateCoordinator], Sensor
                 except ValueError:
                     pass
             else:
-                # If no end date, we might count it as active/upcoming depending on logic
-                # Let's count it if it's not archived.
                 if not trip.get("is_archived"):
                     count += 1
                     
         return count
 
 
-class TrekNextTripSensor(CoordinatorEntity[TrekDataUpdateCoordinator], SensorEntity):
+class TrekNextTripSensor(TrekBaseSensor):
     """Sensor showing the next upcoming trip."""
-
     def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
-        """Initialize the sensor."""
-        super().__init__(coordinator)
-        self._attr_unique_id = f"{entry.entry_id}_next_trip"
-        self._attr_name = "TREK Next Trip"
-        self._attr_icon = "mdi:calendar-clock"
+        super().__init__(coordinator, entry, "next_trip", "Next Trip", "mdi:calendar-clock")
 
     @property
     def native_value(self) -> str | None:
-        """Return the state of the sensor."""
-        if not self.coordinator.data:
-            return "No trips"
-            
-        upcoming_trips = []
-        today = datetime.now().date()
-        
-        for trip in self.coordinator.data:
-            start_date_str = trip.get("start_date")
-            if start_date_str and not trip.get("is_archived"):
-                try:
-                    start_date = datetime.strptime(start_date_str[:10], "%Y-%m-%d").date()
-                    if start_date >= today:
-                        upcoming_trips.append((start_date, trip.get("title", "Unnamed Trip")))
-                except ValueError:
-                    pass
-                    
-        if not upcoming_trips:
+        next_trip = self.stats.get("next_trip")
+        if not next_trip:
             return "No upcoming trips"
-            
-        upcoming_trips.sort(key=lambda x: x[0])
-        return upcoming_trips[0][1]
+        return next_trip.get("title", "Unnamed Trip")
 
     @property
     def extra_state_attributes(self) -> Dict[str, Any]:
-        """Return extra state attributes."""
-        if not self.coordinator.data:
+        next_trip = self.stats.get("next_trip")
+        if not next_trip:
             return {}
-            
-        upcoming_trips = []
-        today = datetime.now().date()
-        
-        for trip in self.coordinator.data:
-            start_date_str = trip.get("start_date")
-            if start_date_str and not trip.get("is_archived"):
-                try:
-                    start_date = datetime.strptime(start_date_str[:10], "%Y-%m-%d").date()
-                    if start_date >= today:
-                        upcoming_trips.append((start_date, trip))
-                except ValueError:
-                    pass
-                    
-        if not upcoming_trips:
-            return {}
-            
-        upcoming_trips.sort(key=lambda x: x[0])
-        next_trip = upcoming_trips[0][1]
         
         return {
             "start_date": next_trip.get("start_date"),
             "end_date": next_trip.get("end_date"),
-            "destination": next_trip.get("title"),
-            "id": next_trip.get("id"),
+            "days_until": next_trip.get("days_until"),
+            "country": next_trip.get("country"),
+            "countries": next_trip.get("countries", []),
+class TrekTotalTripsSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "total_trips", "Total Trips", "mdi:bag-suitcase")
+
+    @property
+    def native_value(self) -> int | None:
+        return self.stats.get("total_trips")
+
+
+class TrekTotalCountriesSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "total_countries", "Total Countries", "mdi:earth")
+
+    @property
+    def native_value(self) -> int | None:
+        return self.stats.get("total_countries")
+
+
+class TrekTotalCitiesSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "total_cities", "Total Cities", "mdi:city")
+
+    @property
+    def native_value(self) -> int | None:
+        return self.stats.get("total_cities")
+
+
+class TrekTotalPlacesSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "total_places", "Total Places", "mdi:map-marker-multiple")
+
+    @property
+    def native_value(self) -> int | None:
+        return self.stats.get("total_places")
+
+
+class TrekTotalDaysSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "total_days", "Total Days Travelled", "mdi:calendar-range")
+
+    @property
+    def native_value(self) -> int | None:
+        return self.stats.get("total_days")
+
+
+class TrekTotalDistanceSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "total_distance", "Total Distance Flown", "mdi:airplane")
+        self._attr_native_unit_of_measurement = "km"
+        self._attr_device_class = "distance"
+
+    @property
+    def native_value(self) -> float | None:
+        return self.stats.get("total_distance_km")
+
+
+class TrekDaysUntilNextTripSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "days_until_next_trip", "Days Until Next Trip", "mdi:timer-sand")
+        self._attr_native_unit_of_measurement = "days"
+
+    @property
+    def native_value(self) -> int | None:
+        next_trip = self.stats.get("next_trip")
+        if not next_trip:
+            return None
+        return next_trip.get("days_until")
+
+
+class TrekLastTripSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "last_trip", "Last Trip", "mdi:history")
+
+    @property
+    def native_value(self) -> str | None:
+        last_trip = self.stats.get("last_trip")
+        if not last_trip:
+            return "No previous trips"
+        return last_trip.get("title", "Unnamed Trip")
+
+    @property
+    def extra_state_attributes(self) -> Dict[str, Any]:
+        last_trip = self.stats.get("last_trip")
+        if not last_trip:
+            return {}
+        
+        return {
+            "start_date": last_trip.get("start_date"),
+            "end_date": last_trip.get("end_date"),
+            "country": last_trip.get("country"),
+            "countries": last_trip.get("countries", []),
+        }
+
+
+class TrekBucketListSensor(TrekBaseSensor):
+    def __init__(self, coordinator: TrekDataUpdateCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator, entry, "bucket_list", "Bucket List", "mdi:format-list-checks")
+
+    @property
+    def native_value(self) -> int | None:
+        if not self.coordinator.data:
+            return 0
+        bucket_list = self.coordinator.data.get("bucket_list", [])
+        return len(bucket_list)
+
+    @property
+    def extra_state_attributes(self) -> Dict[str, Any]:
+        if not self.coordinator.data:
+            return {}
+        bucket_list = self.coordinator.data.get("bucket_list", [])
+        
+        items = [item.get("name", "Unnamed") for item in bucket_list]
+        return {
+            "items": items
         }
