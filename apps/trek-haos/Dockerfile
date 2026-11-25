@@ -1,4 +1,4 @@
-ARG BUILD_FROM
+ARG BUILD_FROM=mauriceboe/trek:5.2.0
 FROM $BUILD_FROM
 
 USER root
